@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glance Micro-Moments Intent Engine Prototype</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            500: '#4f46e5',
+                            600: '#4338ca',
+                            900: '#1e1b4b',
+                        },
+                        glance: {
+                            accent: '#ff3366',
+                            glow: '#ff0055',
+                            dark: '#0f172a',
+                            card: '#1e293b'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .phone-container {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 51, 102, 0.15);
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .glass-card-dark {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+    <!-- Top Header Navigation -->
+    <header class="max-w-7xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-glance-accent to-amber-400 flex items-center justify-center font-bold text-white shadow-lg shadow-glance-accent/20">
+                <i class="fa-solid fa-bolt text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    GLANCE <span class="text-xs px-2 py-0.5 rounded-full bg-glance-accent/20 text-glance-accent border border-glance-accent/30 font-semibold">Micro-Moments Engine</span>
+                </h1>
+                <p class="text-xs text-slate-400">Lock-Screen Engagement & Retention Prototype Pitch</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                InMobi Pitch Prototype v1.0
+            </span>
+            <button onclick="resetPrototype()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-right text-xs"></i> Reset State
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto w-full my-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- LEFT PANEL: Contextual Controller & Pitch Strategy (4 cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6 order-2 lg:order-1">
+            
+            <!-- CES Control Box -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800 shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-glance-accent"></i> On-Device CES Engine
+                    </h2>
+                    <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded font-mono">15ms Latency</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Simulate user wake context to see how Glance dynamically alters ad load & micro-utilities.</p>
+                
+                <!-- CES Mode Selector -->
+                <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900/80 rounded-xl border border-slate-800">
+                    <button id="btnQuickWake" onclick="setCESMode('quick')" class="py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 bg-glance-accent text-white shadow-md">
+                        <i class="fa-solid fa-bolt-lightning text-sm"></i>
+                        <span>Quick-Wake</span>
+                        <span class="text-[9px] font-normal opacity-80">Check Time / Velocity</span>
+                    </button>
+                    <button id="btnIdleWake" onclick="setCESMode('idle')" class="py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 text-slate-400 hover:text-white hover:bg-slate-800/50">
+                        <i class="fa-solid fa-couch text-sm"></i>
+                        <span>Idle-Wake</span>
+                        <span class="text-[9px] font-normal opacity-80">Relaxed / Long Dwell</span>
+                    </button>
+                </div>
+
+                <!-- Active Mode Specs -->
+                <div id="cesModeDescription" class="mt-4 p-3 rounded-xl bg-slate-900/50 border border-slate-800 text-xs space-y-1.5">
+                    <div class="flex justify-between items-center text-slate-300 font-semibold">
+                        <span>Current Policy:</span>
+                        <span id="policyBadge" class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-[10px]">Zero Full-Bleed Ads</span>
+                    </div>
+                    <p id="policyDetails" class="text-slate-400 text-[11px] leading-relaxed">
+                        User wakes phone briefly (< 2s gap). Full-screen ads suppressed. Showing non-intrusive micro-tiles only to prevent opt-out.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Value Proposition Accordion -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-amber-400"></i> Core Value Mechanics
+                </h3>
+                
+                <div class="space-y-3 text-xs">
+                    <div class="p-3 rounded-xl bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                        <span class="font-bold text-white block mb-1">1. Non-Intrusive Micro-Tiles</span>
+                        <p class="text-slate-400 text-[11px]">Pinned to bottom 25% of screen. Gives 2-second immediate utility without overriding time/notifications.</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                        <span class="font-bold text-white block mb-1">2. Native Sponsorship Integration</span>
+                        <p class="text-slate-400 text-[11px]">Ads are embedded inside interactive micro-utilities (e.g. Dream11 match predictor), yielding higher CTR.</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                        <span class="font-bold text-white block mb-1">3. On-Device Privacy First</span>
+                        <p class="text-slate-400 text-[11px]">Motion & time delta calculated locally on phone memory. No user identity tracking required.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CENTER PANEL: Interactive Smartphone Mockup (4 cols) -->
+        <section class="lg:col-span-4 flex justify-center items-center order-1 lg:order-2">
+            
+            <!-- Phone Frame -->
+            <div class="phone-container relative w-[310px] h-[630px] sm:w-[330px] sm:h-[660px] bg-black rounded-[48px] p-3 border-4 border-slate-800 relative select-none">
+                
+                <!-- Speaker Notch / Dynamic Island -->
+                <div class="absolute top-5 left-1/2 -translate-x-1/2 w-28 h-4 bg-black rounded-full z-50 flex items-center justify-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800"></div>
+                    <div class="w-2 h-2 rounded-full bg-blue-900/40"></div>
+                </div>
+
+                <!-- Phone Screen Container -->
+                <div id="phoneScreen" class="relative w-full h-full rounded-[38px] overflow-hidden bg-cover bg-center transition-all duration-700 flex flex-col justify-between p-5" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop');">
+                    
+                    <!-- Dark Gradient Overlay for Readability -->
+                    <div id="screenOverlay" class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none transition-opacity duration-500"></div>
+
+                    <!-- Top Lock Screen Header (Clock & System Stats) -->
+                    <div class="relative z-10 pt-6 text-center text-white">
+                        <div class="flex justify-between items-center text-[10px] font-semibold text-slate-300 px-2 mb-4">
+                            <span>Jio 5G</span>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-wifi text-[9px]"></i>
+                                <i class="fa-solid fa-battery-three-quarters text-[10px]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Clock Widget -->
+                        <h2 id="lockClock" class="text-5xl font-extrabold tracking-tight drop-shadow-md">10:42</h2>
+                        <p id="lockDate" class="text-xs font-medium text-slate-200 mt-1 drop-shadow">Tuesday, October 6</p>
+                        
+                        <!-- Simulated Notification Pill -->
+                        <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] text-slate-200 shadow-lg">
+                            <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+                            <span>Message from Alex</span>
+                            <span class="text-slate-400">2m ago</span>
+                        </div>
+                    </div>
+
+                    <!-- Idle Mode Full-Bleed Banner (Toggled via CES Mode) -->
+                    <div id="idleAdBanner" class="hidden relative z-10 mx-1 p-3 rounded-2xl glass-card text-white border border-white/20 animate-fade-in shadow-2xl">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-400/30">
+                                <i class="fa-solid fa-star text-[8px]"></i> Sponsored Glance
+                            </span>
+                            <span class="text-[9px] text-slate-300">Swipe to view</span>
+                        </div>
+                        <h4 class="text-xs font-bold line-clamp-1">New Nike Air Max Drop - Exclusive First Look</h4>
+                        <p class="text-[10px] text-slate-200 mt-0.5 line-clamp-2">Explore the revolutionary design built for supreme comfort.</p>
+                    </div>
+
+                    <!-- Bottom Lock Screen Micro-Tiles Section -->
+                    <div class="relative z-10 space-y-2.5 mb-2">
+                        
+                        <!-- Primary Micro-Tile: Live Cricket Match & Dream11 Predictor -->
+                        <div id="primaryTile" class="glass-card rounded-2xl p-3 text-white transition-all duration-300 hover:border-white/40 cursor-pointer shadow-lg" onclick="expandTile('cricket')">
+                            <div class="flex items-center justify-between text-[10px] text-slate-300 mb-1.5">
+                                <span class="font-bold flex items-center gap-1 text-red-400">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> LIVE IPL MATCH
+                                </span>
+                                <span class="text-[9px] bg-black/40 px-1.5 py-0.5 rounded text-amber-300 border border-amber-500/30">
+                                    Dream11 Predict
+                                </span>
+                            </div>
+
+                            <!-- Teams & Score -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center font-bold text-[9px]">IND</div>
+                                    <span class="text-xs font-bold">184/3 <span class="text-[10px] font-normal text-slate-300">(18.2 ov)</span></span>
+                                </div>
+                                <span class="text-[10px] text-slate-300 font-mono">VS AUS</span>
+                            </div>
+
+                            <!-- Interactive Micro-Prompt -->
+                            <div id="cricketPrompt" class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px]">
+                                <span class="text-slate-200 font-medium">Next ball outcome?</span>
+                                <div class="flex gap-1.5" onclick="event.stopPropagation()">
+                                    <button onclick="voteCricket('4/6')" class="px-2 py-1 rounded bg-glance-accent/80 hover:bg-glance-accent text-white font-bold transition-transform active:scale-95 text-[9px]">
+                                        4 or 6
+                                    </button>
+                                    <button onclick="voteCricket('Wicket')" class="px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-bold transition-transform active:scale-95 text-[9px]">
+                                        Wicket
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="cricketVotedMsg" class="hidden mt-2 text-[10px] text-emerald-400 font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> Prediction locked! +50 Glance Coins
+                            </div>
+                        </div>
+
+                        <!-- Secondary Micro-Pills (2 Horizontal Tiles) -->
+                        <div class="grid grid-cols-2 gap-2">
+                            
+                            <!-- Pill 1: Weather & Outfit Suggestion -->
+                            <div id="weatherPill" onclick="expandTile('weather')" class="glass-card rounded-xl p-2.5 text-white transition-all cursor-pointer hover:bg-white/20">
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-slate-300 font-medium"><i class="fa-solid fa-cloud-sun-rain text-amber-300"></i> 28°C</span>
+                                    <span class="text-[8px] text-slate-400">Rain @ 5PM</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-100 mt-1 truncate">Light jacket recommended</p>
+                            </div>
+
+                            <!-- Pill 2: 5-Second Trivia -->
+                            <div id="triviaPill" onclick="expandTile('trivia')" class="glass-card rounded-xl p-2.5 text-white transition-all cursor-pointer hover:bg-white/20">
+                                <div class="flex items-center justify-between text-[10px]">
+                                    <span class="text-purple-300 font-bold"><i class="fa-solid fa-brain"></i> Trivia</span>
+                                    <span class="text-[8px] bg-purple-500/30 text-purple-200 px-1 rounded">5 Sec</span>
+                                </div>
+                                <p class="text-[9px] font-bold text-slate-100 mt-1 truncate">Tap to test knowledge</p>
+                            </div>
+
+                        </div>
+
+                        <!-- Lock Screen Swipe Prompt -->
+                        <div class="text-center pt-1">
+                            <p class="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-chevron-up text-[8px] animate-bounce"></i> Swipe up to unlock
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Modal Popup overlay inside Phone when Tile Expanded -->
+                    <div id="tileModal" class="absolute inset-x-3 bottom-4 bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-3xl p-4 text-white z-50 transform translate-y-full opacity-0 transition-all duration-300 shadow-2xl">
+                        <div class="flex justify-between items-center mb-3">
+                            <span id="modalCategory" class="text-[10px] font-bold uppercase tracking-wider text-glance-accent">Glance Interactive</span>
+                            <button onclick="closeModal()" class="w-6 h-6 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs hover:bg-slate-700">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div id="modalContent">
+                            <!-- Dynamic Content Inserted via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT PANEL: Simulated Pitch Metrics & Business Impact (4 cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6 order-3">
+            
+            <!-- Real-time Pitch Analytics Dashboard -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800 shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-emerald-400"></i> Simulated Impact Metrics
+                    </h2>
+                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded font-mono">Live Projections</span>
+                </div>
+
+                <div class="space-y-4">
+                    
+                    <!-- Metric 1: Opt-Out Risk -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-400">User Opt-Out / Disable Risk</span>
+                            <span id="metricOptOut" class="font-bold text-emerald-400">4.2% (Low)</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="barOptOut" class="h-full bg-emerald-400 transition-all duration-500" style="width: 25%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Ad Fatigue Score -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-400">Ad Fatigue Score</span>
+                            <span id="metricFatigue" class="font-bold text-emerald-400">18 / 100</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="barFatigue" class="h-full bg-emerald-400 transition-all duration-500" style="width: 18%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Deliberate Lock-Screen Taps -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-400">Daily Taps / User (CTR)</span>
+                            <span id="metricTaps" class="font-bold text-blue-400">2.8 Taps (+133%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="barTaps" class="h-full bg-blue-500 transition-all duration-500" style="width: 78%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4: Projected eCPM Yield -->
+                    <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Est. Sponsor eCPM</span>
+                            <span id="metricECPM" class="text-lg font-extrabold text-amber-300">$2.15</span>
+                        </div>
+                        <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                            +75% vs Baseline
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ROI Summary Card -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800 bg-gradient-to-br from-slate-900/90 to-glance-dark">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-amber-400"></i> Business Executive Pitch Case
+                </h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    By prioritizing <strong class="text-slate-200">2-second utility</strong> over full-screen intrusive ad volume during quick wake events, Glance protects its OEM ecosystem, reduces churn by <strong class="text-emerald-400">25%</strong>, and commands premium rates for intent-driven sponsored tiles.
+                </p>
+                <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Target Stakeholder:</span>
+                    <span class="font-semibold text-glance-accent">InMobi Director of Product</span>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto w-full pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+        <p>Glance "Micro-Moments" Intent Engine • Interactive Pitch Proposal</p>
+        <div class="flex items-center gap-4">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-slate-400"></i> Zero-Party Signals</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen text-slate-400"></i> Android OS Native</span>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentMode = 'quick';
+        let voted = false;
+
+        // Update Phone Clock in Realtime
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('lockClock').innerText = `${hours}:${minutes}`;
+            
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('lockDate').innerText = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Set CES Mode (Quick-Wake vs Idle-Wake)
+        function setCESMode(mode) {
+            currentMode = mode;
+            const btnQuick = document.getElementById('btnQuickWake');
+            const btnIdle = document.getElementById('btnIdleWake');
+            const idleBanner = document.getElementById('idleAdBanner');
+            
+            const policyBadge = document.getElementById('policyBadge');
+            const policyDetails = document.getElementById('policyDetails');
+
+            // Metrics Elements
+            const metricOptOut = document.getElementById('metricOptOut');
+            const metricFatigue = document.getElementById('metricFatigue');
+            const metricTaps = document.getElementById('metricTaps');
+            const metricECPM = document.getElementById('metricECPM');
+
+            const barOptOut = document.getElementById('barOptOut');
+            const barFatigue = document.getElementById('barFatigue');
+
+            if (mode === 'quick') {
+                btnQuick.className = 'py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 bg-glance-accent text-white shadow-md';
+                btnIdle.className = 'py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 text-slate-400 hover:text-white hover:bg-slate-800/50';
+                
+                idleBanner.classList.add('hidden');
+                
+                policyBadge.innerText = 'Zero Full-Bleed Ads';
+                policyBadge.className = 'text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded text-[10px]';
+                policyDetails.innerText = 'User wakes phone briefly (< 2s gap). Full-screen ads suppressed. Showing non-intrusive micro-tiles only to prevent opt-out.';
+
+                // Metrics update for Quick-Wake
+                metricOptOut.innerText = '4.2% (Low)';
+                metricOptOut.className = 'font-bold text-emerald-400';
+                barOptOut.style.width = '25%';
+                barOptOut.className = 'h-full bg-emerald-400 transition-all duration-500';
+
+                metricFatigue.innerText = '18 / 100';
+                metricFatigue.className = 'font-bold text-emerald-400';
+                barFatigue.style.width = '18%';
+                barFatigue.className = 'h-full bg-emerald-400 transition-all duration-500';
+
+                metricTaps.innerText = '2.8 Taps (+133%)';
+                metricECPM.innerText = '$2.15';
+            } else {
+                btnIdle.className = 'py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 bg-glance-accent text-white shadow-md';
+                btnQuick.className = 'py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center gap-1 text-slate-400 hover:text-white hover:bg-slate-800/50';
+                
+                idleBanner.classList.remove('hidden');
+
+                policyBadge.innerText = 'Rich Media Enabled';
+                policyBadge.className = 'text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded text-[10px]';
+                policyDetails.innerText = 'User stationary for > 15m. Dwell probability is high. Serving full-bleed sponsored content & conversational commerce.';
+
+                // Metrics update for Idle-Wake
+                metricOptOut.innerText = '12.8% (Elevated)';
+                metricOptOut.className = 'font-bold text-amber-400';
+                barOptOut.style.width = '60%';
+                barOptOut.className = 'h-full bg-amber-400 transition-all duration-500';
+
+                metricFatigue.innerText = '64 / 100';
+                metricFatigue.className = 'font-bold text-amber-400';
+                barFatigue.style.width = '64%';
+                barFatigue.className = 'h-full bg-amber-400 transition-all duration-500';
+
+                metricTaps.innerText = '1.2 Taps (Standard)';
+                metricECPM.innerText = '$1.20';
+            }
+        }
+
+        // Vote handling in Cricket Tile
+        function voteCricket(option) {
+            voted = true;
+            document.getElementById('cricketPrompt').classList.add('hidden');
+            document.getElementById('cricketVotedMsg').classList.remove('hidden');
+        }
+
+        // Expand Tile Modal
+        function expandTile(type) {
+            const modal = document.getElementById('tileModal');
+            const category = document.getElementById('modalCategory');
+            const content = document.getElementById('modalContent');
+
+            if (type === 'cricket') {
+                category.innerText = 'IPL LIVE MATCH • DREAM11';
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold border-b border-slate-700 pb-2">
+                            <span>INDIA: 184/3 (18.2 Overs)</span>
+                            <span class="text-emerald-400">CRR: 10.04</span>
+                        </div>
+                        <p class="text-xs text-slate-300">Hardik Pandya 42* (18b) • Virat Kohli 88* (52b)</p>
+                        <div class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs">
+                            <span class="font-bold text-amber-300 block mb-1">Dream11 Live Predictor:</span>
+                            <p class="text-slate-300 text-[11px] mb-2">Will India score 200+ runs in this innings?</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="closeModal()" class="py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs">Yes (84%)</button>
+                                <button onclick="closeModal()" class="py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs">No (16%)</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'weather') {
+                category.innerText = 'WEATHER & OUTFIT UTILITY';
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-extrabold">28°C Rainy</span>
+                            <i class="fa-solid fa-cloud-showers-heavy text-2xl text-blue-400"></i>
+                        </div>
+                        <p class="text-xs text-slate-300">85% chance of thunderstorm around 5:00 PM in Mumbai.</p>
+                        <div class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs">
+                            <span class="font-bold text-amber-300 block mb-1">Sponsored Suggestion:</span>
+                            <p class="text-slate-300 text-[11px]">Get waterproof jackets delivered in 10 mins via Zepto.</p>
+                            <button onclick="closeModal()" class="mt-2 w-full py-1.5 rounded bg-glance-accent text-white font-bold text-xs">Explore Brands</button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'trivia') {
+                category.innerText = 'GLANCE 5-SECOND TRIVIA';
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        <p class="text-xs font-semibold text-slate-200">Which country won the first ICC Men's T20 World Cup in 2007?</p>
+                        <div class="space-y-1.5">
+                            <button onclick="checkTrivia(this, true)" class="w-full text-left p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700">A. India</button>
+                            <button onclick="checkTrivia(this, false)" class="w-full text-left p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700">B. Pakistan</button>
+                            <button onclick="checkTrivia(this, false)" class="w-full text-left p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700">C. Australia</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('translate-y-full', 'opacity-0');
+        }
+
+        function checkTrivia(btn, isCorrect) {
+            if (isCorrect) {
+                btn.className = 'w-full text-left p-2 rounded-lg bg-emerald-600 text-white text-xs font-bold border border-emerald-400';
+                btn.innerText += ' ✓ Correct! (+20 Coins)';
+            } else {
+                btn.className = 'w-full text-left p-2 rounded-lg bg-red-600 text-white text-xs font-bold border border-red-400';
+                btn.innerText += ' ✗ Incorrect';
+            }
+            setTimeout(closeModal, 1200);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('tileModal');
+            modal.classList.add('translate-y-full', 'opacity-0');
+        }
+
+        function resetPrototype() {
+            voted = false;
+            document.getElementById('cricketPrompt').classList.remove('hidden');
+            document.getElementById('cricketVotedMsg').classList.add('hidden');
+            closeModal();
+            setCESMode('quick');
+        }
+    </script>
+</body>
+</html>
